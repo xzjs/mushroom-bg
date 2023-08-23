@@ -16,7 +16,7 @@ black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1
 placeholder = Response(content=base64.b64decode(
     black_1px.encode('ascii')), media_type='image/png')
 r = redis.Redis(host='127.0.0.1', port=6379)
-keys = ('mushroom2', 'mushroom3', 'mushroom4', 'mushroom5', 'mushroom6')
+keys = ['mushroom2', 'mushroom3', 'mushroom4', 'mushroom5', 'mushroom6']
 indexs = [2,3,4,5,6]
 
 
@@ -47,7 +47,7 @@ def size(size: Size):
 @app.post('/api/signal')
 def signal(signal: Signal):
     if (signal.action == 'start'):
-        r.delete(keys)
+        r.delete('mushroom2', 'mushroom3', 'mushroom4', 'mushroom5', 'mushroom6')
     r.publish('signal', signal.action)
     return
 
