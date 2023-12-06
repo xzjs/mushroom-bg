@@ -10,14 +10,16 @@ import numpy as np
 
 app = FastAPI()
 
-video_capture = cv2.VideoCapture(6)
+video_capture = cv2.VideoCapture(12)
+video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 process_pool_executor = concurrent.futures.ProcessPoolExecutor()
 black_1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjYGBg+A8AAQQBAHAgZQsAAAAASUVORK5CYII='
 placeholder = Response(content=base64.b64decode(
     black_1px.encode('ascii')), media_type='image/png')
 r = redis.Redis(host='127.0.0.1', port=6379)
 keys = ['mushroom2', 'mushroom3', 'mushroom4', 'mushroom5', 'mushroom6']
-indexs = [2,3,4,5,6]
+indexs = [2, 3, 4, 5, 6]
 
 
 def convert(frame: np.ndarray) -> bytes:
@@ -47,8 +49,11 @@ def size(size: Size):
 @app.post('/api/signal')
 def signal(signal: Signal):
     if (signal.action == 'start'):
-        r.delete('mushroom2', 'mushroom3', 'mushroom4', 'mushroom5', 'mushroom6')
+        r.delete('mushroom2', 'mushroom3',
+                 'mushroom4', 'mushroom5', 'mushroom6')
     r.publish('signal', signal.action)
+    if signal.action == 'stop':
+        r.set('stop_signal', 'True')
     return
 
 
